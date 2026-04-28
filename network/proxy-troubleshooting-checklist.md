@@ -1,3 +1,4 @@
+---
 layout: note
 title: "Proxy Troubleshooting Checklist"
 permalink: /network/proxy-troubleshooting-checklist/

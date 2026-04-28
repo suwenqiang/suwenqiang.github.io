@@ -1,3 +1,4 @@
+---
 layout: note
 title: About
 permalink: /about/

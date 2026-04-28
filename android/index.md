@@ -1,3 +1,4 @@
+---
 layout: note
 title: Android Notes
 permalink: /android/

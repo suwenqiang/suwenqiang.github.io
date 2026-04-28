@@ -1,3 +1,4 @@
+---
 layout: note
 title: "Git Push Ref Mapping Check"
 permalink: /linux/git-push-ref-mapping-check/

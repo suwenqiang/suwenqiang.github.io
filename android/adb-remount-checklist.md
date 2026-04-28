@@ -1,3 +1,4 @@
+---
 layout: note
 title: "ADB Remount Checklist"
 permalink: /android/adb-remount-checklist/

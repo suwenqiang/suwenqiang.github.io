@@ -1,3 +1,4 @@
+---
 layout: note
 title: Linux Notes
 permalink: /linux/
