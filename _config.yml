@@ -1,0 +1,13 @@
+title: suwenqiang Notes
+description: Personal troubleshooting knowledge base for recurring issues, fixes, and working notes.
+theme: jekyll-theme-cayman
+markdown: kramdown
+permalink: pretty
+show_downloads: false
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+      author: suwenqiang
