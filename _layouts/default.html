@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% if page.title %}{{ page.title }} | {% endif %}{{ site.title }}</title>
+  <meta name="description" content="{% if page.description %}{{ page.description }}{% else %}{{ site.description }}{% endif %}">
+  <meta name="author" content="{{ site.author }}">
+  <style>
+    :root {
+      --text-color: #333;
+      --bg-color: #fff;
+      --link-color: #0366d6;
+      --border-color: #eee;
+      --code-bg: #f6f8fa;
+      --sidebar-width: 260px;
+      --sidebar-bg: #f8f9fa;
+      --sidebar-toggle-bottom: 4.5rem;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Helvetica, Arial, sans-serif;
+      line-height: 1.8;
+      color: var(--text-color);
+      background: var(--bg-color);
+    }
+
+    a {
+      color: var(--link-color);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .page-wrapper {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border-color);
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 1rem;
+      z-index: 100;
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar-header {
+      padding-bottom: 0.75rem;
+      margin-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .sidebar-header h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-color);
+      margin: 0;
+    }
+
+    .sidebar-header h2 a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .sidebar-header h2 a:hover {
+      text-decoration: none;
+    }
+
+    .sidebar-header p {
+      color: #666;
+      font-size: 0.82rem;
+      margin-top: 0.35rem;
+      line-height: 1.6;
+    }
+
+    .dir-tree {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-size: 0.85rem;
+    }
+
+    .dir-tree ul {
+      list-style: none;
+      padding-left: 1rem;
+      margin: 0;
+    }
+
+    .dir-tree li {
+      margin: 0.2rem 0;
+    }
+
+    .dir-tree .tree-item {
+      display: flex;
+      align-items: center;
+      padding: 0.3rem 0.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+      text-decoration: none;
+      color: var(--text-color);
+      width: 100%;
+      text-align: left;
+      font-size: inherit;
+      font-family: inherit;
+      border: none;
+      background: none;
+    }
+
+    .dir-tree button.tree-item:focus {
+      outline: 2px solid var(--link-color);
+      outline-offset: 1px;
+    }
+
+    .dir-tree .tree-item:hover {
+      background: rgba(0, 0, 0, 0.05);
+      text-decoration: none;
+    }
+
+    .dir-tree .tree-item.active {
+      background: rgba(3, 102, 214, 0.1);
+      color: var(--link-color);
+    }
+
+    .dir-tree .tree-toggle {
+      width: 16px;
+      height: 16px;
+      margin-right: 0.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      color: #666;
+      flex-shrink: 0;
+      transition: transform 0.2s;
+    }
+
+    .dir-tree .tree-toggle.expanded {
+      transform: rotate(90deg);
+    }
+
+    .dir-tree .tree-icon {
+      margin-right: 0.4rem;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    .dir-tree .tree-label {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .dir-tree .tree-children {
+      display: none;
+    }
+
+    .dir-tree .tree-children.expanded {
+      display: block;
+    }
+
+    .content-wrapper {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      max-width: calc(100% - var(--sidebar-width));
+    }
+
+    .content-inner {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    .sidebar-toggle {
+      display: none;
+      position: fixed;
+      bottom: var(--sidebar-toggle-bottom);
+      left: 1rem;
+      background: var(--link-color);
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      z-index: 1001;
+      border: none;
+      font-size: 1.2rem;
+    }
+
+    .sidebar-toggle:hover {
+      background: #024ea4;
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 99;
+    }
+
+    .sidebar-overlay.show {
+      display: block;
+    }
+
+    header {
+      margin-bottom: 3rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    header h1 a {
+      color: var(--text-color);
+      text-decoration: none;
+    }
+
+    header p {
+      color: #666;
+      font-size: 0.9rem;
+      margin-top: 0.25rem;
+    }
+
+    nav {
+      margin-top: 0.5rem;
+    }
+
+    nav a {
+      margin-right: 1rem;
+      color: var(--link-color);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    main {
+      min-height: 60vh;
+    }
+
+    footer {
+      margin-top: 3rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border-color);
+      font-size: 0.85rem;
+      color: #666;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      margin: 1.5rem 0 0.5rem;
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    h1 { font-size: 1.8rem; }
+    h2 { font-size: 1.4rem; }
+    h3 { font-size: 1.2rem; }
+
+    p {
+      margin: 0.8rem 0;
+    }
+
+    ul,
+    ol {
+      margin: 0.8rem 0;
+      padding-left: 1.5rem;
+    }
+
+    li {
+      margin: 0.3rem 0;
+    }
+
+    code {
+      background: var(--code-bg);
+      padding: 0.2rem 0.4rem;
+      border-radius: 3px;
+      font-size: 0.9em;
+      font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+    }
+
+    pre {
+      background: var(--code-bg);
+      padding: 1rem;
+      border-radius: 5px;
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+    }
+
+    blockquote {
+      border-left: 3px solid var(--border-color);
+      padding-left: 1rem;
+      margin: 1rem 0;
+      color: #666;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+    }
+
+    th,
+    td {
+      border: 1px solid var(--border-color);
+      padding: 0.5rem;
+      text-align: left;
+    }
+
+    th {
+      background: var(--code-bg);
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .note-header {
+      margin-bottom: 1.25rem;
+    }
+
+    .note-kicker {
+      color: #666;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.4rem;
+    }
+
+    .note-list {
+      list-style: none;
+      padding: 0;
+      margin: 0.75rem 0 1.25rem;
+    }
+
+    .note-list li {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.7rem 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .note-list li:last-child {
+      border-bottom: none;
+    }
+
+    .note-list a {
+      font-weight: 500;
+    }
+
+    .note-meta {
+      color: #666;
+      font-size: 0.9rem;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .back-to-top {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--link-color);
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+      z-index: 1000;
+      text-decoration: none;
+    }
+
+    .back-to-top:hover {
+      background: #024ea4;
+      transform: translateY(-3px);
+      text-decoration: none;
+    }
+
+    .back-to-top.show {
+      display: flex;
+    }
+
+    @media (max-width: 900px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.show {
+        transform: translateX(0);
+      }
+
+      .content-wrapper {
+        margin-left: 0;
+        max-width: 100%;
+      }
+
+      .sidebar-toggle {
+        display: flex;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .content-inner {
+        padding: 1rem;
+      }
+
+      h1 { font-size: 1.5rem; }
+      h2 { font-size: 1.2rem; }
+
+      .note-list li {
+        flex-direction: column;
+        gap: 0.2rem;
+      }
+
+      .note-meta {
+        white-space: normal;
+      }
+
+      .back-to-top {
+        bottom: 1rem;
+        right: 1rem;
+        width: 36px;
+        height: 36px;
+      }
+
+      .sidebar-toggle {
+        bottom: 4rem;
+        width: 36px;
+        height: 36px;
+      }
+    }
+  </style>
+</head>
+<body>
+  {% assign current_url = page.url | default: "/" %}
+  {% assign is_post = false %}
+  {% assign is_android = false %}
+  {% assign is_linux = false %}
+  {% assign is_network = false %}
+  {% if page.collection == "posts" %}
+    {% assign is_post = true %}
+  {% endif %}
+  {% if current_url == "/android/" or current_url contains "/android/" or page.categories contains "android" %}
+    {% assign is_android = true %}
+  {% endif %}
+  {% if current_url == "/linux/" or current_url contains "/linux/" or page.categories contains "linux" %}
+    {% assign is_linux = true %}
+  {% endif %}
+  {% if current_url == "/network/" or current_url contains "/network/" or page.categories contains "network" %}
+    {% assign is_network = true %}
+  {% endif %}
+
+  <div class="page-wrapper">
+    <aside class="sidebar" id="sidebar" role="navigation" aria-label="笔记目录导航">
+      <div class="sidebar-header">
+        <h2><a href="{{ '/' | relative_url }}">📚 笔记目录</a></h2>
+        <p>按主题整理长期有效的排障记录和参考笔记。</p>
+      </div>
+
+      <ul class="dir-tree">
+        <li>
+          <button class="tree-item{% if is_android %} active{% endif %}" onclick="toggleTree(this)" aria-expanded="{% if is_android %}true{% else %}false{% endif %}">
+            <span class="tree-toggle{% if is_android %} expanded{% endif %}">▶</span>
+            <span class="tree-icon">📱</span>
+            <span class="tree-label">Android</span>
+          </button>
+          <ul class="tree-children{% if is_android %} expanded{% endif %}">
+            <li><a class="tree-item{% if current_url == '/android/adb-remount-checklist/' %} active{% endif %}" href="{{ '/android/adb-remount-checklist/' | relative_url }}"><span class="tree-icon">📄</span><span class="tree-label">ADB Remount Checklist</span></a></li>
+          </ul>
+        </li>
+
+        <li>
+          <button class="tree-item{% if is_linux %} active{% endif %}" onclick="toggleTree(this)" aria-expanded="{% if is_linux %}true{% else %}false{% endif %}">
+            <span class="tree-toggle{% if is_linux %} expanded{% endif %}">▶</span>
+            <span class="tree-icon">🐧</span>
+            <span class="tree-label">Linux</span>
+          </button>
+          <ul class="tree-children{% if is_linux %} expanded{% endif %}">
+            <li><a class="tree-item{% if current_url == '/linux/git-push-ref-mapping-check/' %} active{% endif %}" href="{{ '/linux/git-push-ref-mapping-check/' | relative_url }}"><span class="tree-icon">📄</span><span class="tree-label">Git Push Ref Mapping Check</span></a></li>
+          </ul>
+        </li>
+
+        <li>
+          <button class="tree-item{% if is_network %} active{% endif %}" onclick="toggleTree(this)" aria-expanded="{% if is_network %}true{% else %}false{% endif %}">
+            <span class="tree-toggle{% if is_network %} expanded{% endif %}">▶</span>
+            <span class="tree-icon">🌐</span>
+            <span class="tree-label">Network</span>
+          </button>
+          <ul class="tree-children{% if is_network %} expanded{% endif %}">
+            <li><a class="tree-item{% if current_url == '/network/proxy-troubleshooting-checklist/' %} active{% endif %}" href="{{ '/network/proxy-troubleshooting-checklist/' | relative_url }}"><span class="tree-icon">📄</span><span class="tree-label">Proxy Troubleshooting Checklist</span></a></li>
+          </ul>
+        </li>
+      </ul>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+    <div class="content-wrapper">
+      <div class="content-inner">
+        <header>
+          <h1><a href="{{ '/' | relative_url }}">{{ site.title }}</a></h1>
+          <p>{{ site.description }}</p>
+          <nav>
+            <a href="{{ '/' | relative_url }}">Home</a>
+            <a href="{{ '/about/' | relative_url }}">About</a>
+          </nav>
+        </header>
+
+        <main>
+          {{ content }}
+        </main>
+
+        <footer>
+          内容保留你自己的笔记体系，整体布局按目录式技术博客方式组织。
+        </footer>
+      </div>
+    </div>
+  </div>
+
+  <button class="sidebar-toggle" type="button" onclick="toggleSidebar()" aria-label="切换目录">
+    ☰
+  </button>
+
+  <a href="#" class="back-to-top" id="backToTop" aria-label="回到顶部">↑</a>
+
+  <script>
+    function toggleTree(button) {
+      const next = button.nextElementSibling;
+      const toggle = button.querySelector('.tree-toggle');
+      const expanded = button.getAttribute('aria-expanded') === 'true';
+      button.setAttribute('aria-expanded', String(!expanded));
+      if (next) {
+        next.classList.toggle('expanded', !expanded);
+      }
+      if (toggle) {
+        toggle.classList.toggle('expanded', !expanded);
+      }
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('show');
+      document.getElementById('sidebar-overlay').classList.toggle('show');
+    }
+
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('show');
+      document.getElementById('sidebar-overlay').classList.remove('show');
+    }
+
+    window.addEventListener('scroll', function() {
+      const backToTop = document.getElementById('backToTop');
+      if (window.scrollY > 300) {
+        backToTop.classList.add('show');
+      } else {
+        backToTop.classList.remove('show');
+      }
+    });
+  </script>
+</body>
+</html>

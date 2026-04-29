@@ -1,13 +1,6 @@
-title: suwenqiang Notes
-description: Personal troubleshooting knowledge base for recurring issues, fixes, and working notes.
-theme: jekyll-theme-cayman
+title: suwenqiang Blog
+description: Documentation-style notes for Android, Linux, networking, and recurring troubleshooting work.
 markdown: kramdown
 permalink: pretty
 show_downloads: false
-defaults:
-  - scope:
-      path: ""
-      type: posts
-    values:
-      layout: note
-      author: suwenqiang
+author: suwenqiang
