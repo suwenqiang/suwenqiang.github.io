@@ -25,3 +25,8 @@ This site is organized as a documentation-style troubleshooting notebook. Evergr
 
 #### Reference Notes
 - [Proxy Troubleshooting Checklist](/network/proxy-troubleshooting-checklist/)
+
+### Others
+
+#### Reference Notes
+- [Windows terminal设置](/others/windows-terminal-settings/)
