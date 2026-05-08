@@ -24,7 +24,7 @@ Windows 上面内置有 Windows PowerShell，这个和 PowerShell 7 有比较大
 
 我现在使用的配置方案是：
 
-https://github.com/mbadolato/iTerm2-Color-Schemes/blob/master/windowsterminal/Nord.json
+[Nord.json 配色方案](https://github.com/mbadolato/iTerm2-Color-Schemes/blob/master/windowsterminal/Nord.json)
 
 ## 默认打开 ssh 登录的 pwsh.exe
 
@@ -40,6 +40,6 @@ https://github.com/mbadolato/iTerm2-Color-Schemes/blob/master/windowsterminal/No
 
 ![最终结果](/assets/others/windows-terminal-settings/image-3.png)
 
-https://chat.deepseek.com/share/o1g6ug0moaosueuljz
+[DeepSeek 分享链接](https://chat.deepseek.com/share/o1g6ug0moaosueuljz)
 
 [settings.json 配置文件](/assets/others/windows-terminal-settings/settings.json)

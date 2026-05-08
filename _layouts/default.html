@@ -479,6 +479,7 @@
   {% assign is_android = false %}
   {% assign is_linux = false %}
   {% assign is_network = false %}
+  {% assign is_others = false %}
   {% if page.collection == "posts" %}
     {% assign is_post = true %}
   {% endif %}
@@ -490,6 +491,9 @@
   {% endif %}
   {% if current_url == "/network/" or current_url contains "/network/" or page.categories contains "network" %}
     {% assign is_network = true %}
+  {% endif %}
+  {% if current_url == "/others/" or current_url contains "/others/" or page.categories contains "others" %}
+    {% assign is_others = true %}
   {% endif %}
 
   <div class="page-wrapper">
@@ -530,6 +534,17 @@
           </button>
           <ul class="tree-children{% if is_network %} expanded{% endif %}">
             <li><a class="tree-item{% if current_url == '/network/proxy-troubleshooting-checklist/' %} active{% endif %}" href="{{ '/network/proxy-troubleshooting-checklist/' | relative_url }}"><span class="tree-icon">📄</span><span class="tree-label">Proxy Troubleshooting Checklist</span></a></li>
+          </ul>
+        </li>
+
+        <li>
+          <button class="tree-item{% if is_others %} active{% endif %}" onclick="toggleTree(this)" aria-expanded="{% if is_others %}true{% else %}false{% endif %}">
+            <span class="tree-toggle{% if is_others %} expanded{% endif %}">▶</span>
+            <span class="tree-icon">🗂️</span>
+            <span class="tree-label">Others</span>
+          </button>
+          <ul class="tree-children{% if is_others %} expanded{% endif %}">
+            <li><a class="tree-item{% if current_url == '/others/windows-terminal-settings/' %} active{% endif %}" href="{{ '/others/windows-terminal-settings/' | relative_url }}"><span class="tree-icon">📄</span><span class="tree-label">Windows terminal设置</span></a></li>
           </ul>
         </li>
       </ul>
